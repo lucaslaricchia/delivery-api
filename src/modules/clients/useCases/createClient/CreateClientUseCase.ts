@@ -8,9 +8,12 @@ interface CreateClient {
 
 export class CreateClientUseCase {
   async execute({ password, username }: CreateClient) {
-    const clientExists = await prisma.clients.findUnique({
+    const clientExists = await prisma.clients.findFirst({
       where: {
-        username: username.toLowerCase(),
+        username: {
+          equals: username,
+          mode: "insensitive"
+        }
       },
     });
 
@@ -23,7 +26,7 @@ export class CreateClientUseCase {
 
     const client = await prisma.clients.create({
       data: {
-        username: username.toLowerCase(),
+        username,
         password: hashPassword,
       },
     });
